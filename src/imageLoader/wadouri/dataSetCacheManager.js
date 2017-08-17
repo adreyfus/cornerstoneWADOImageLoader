@@ -99,11 +99,11 @@ function load (uri, loadRequest, imageId) {
 }
 
 // remove the cached/loaded dicom dataset for the specified wadouri to free up memory
-function unload (uri, force) {
+function unload (uri) {
   // console.log('unload for ' + uri);
   if (loadedDataSets[uri]) {
     loadedDataSets[uri].cacheCount--;
-    if (force || loadedDataSets[uri].cacheCount === 0) {
+    if (loadedDataSets[uri].cacheCount === 0) {
       // console.log('removing loaded dataset for ' + uri);
       $(events).trigger('DataSetsCacheChanged', {
         uri,
