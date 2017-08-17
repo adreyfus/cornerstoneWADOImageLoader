@@ -14,5 +14,3 @@ export { default as isJPEGBaseline8BitColor } from './isJPEGBaseline8BitColor';
 export { default as webWorkerManager } from './webWorkerManager';
 export { default as version } from '../version';
 export { internal } from './internal/';
-
-export { default as events } from './events.js';
