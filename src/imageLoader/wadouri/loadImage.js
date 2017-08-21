@@ -9,10 +9,10 @@ import loadFileRequest from './loadFileRequest';
 import { xhrRequest } from '../internal';
 
 // add a decache callback function to clear out our dataSetCacheManager
-function addDecache (image) {
-  image.decache = function () {
+function addDecache (imagePromise, imageId) {
+  imagePromise.decache = function () {
     // console.log('decache');
-    const parsedImageId = parseImageId(image.imageId);
+    const parsedImageId = parseImageId(imageId);
 
     dataSetCacheManager.unload(parsedImageId.url);
   };
@@ -43,13 +43,14 @@ function loadImageFromPromise (dataSetPromise, imageId, frame, sharedCacheKey, o
       const loadEnd = new Date().getTime();
       const imagePromise = createImage(imageId, pixelData, transferSyntax, options);
 
+      addDecache(imagePromise, imageId);
+
       imagePromise.then(function (image) {
         image.data = dataSet;
         const end = new Date().getTime();
 
         image.loadTimeInMS = loadEnd - start;
         image.totalTimeInMS = end - start;
-        addDecache(image);
         deferred.resolve(image);
       }, function (error) {
         // Return the error, and the dataSet
