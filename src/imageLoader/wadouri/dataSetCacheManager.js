@@ -44,9 +44,11 @@ function load (uri, loadRequest, imageId) {
     return alreadyLoadedpromise;
   }
 
-  // if we are currently loading this uri, return its promise
+  // if we are currently loading this uri, increment the cacheCount and return its promise
   if (promises[uri]) {
     // console.log('returning existing load promise for ' + uri);
+    promises[uri].cacheCount++;
+
     return promises[uri];
   }
 
@@ -57,6 +59,8 @@ function load (uri, loadRequest, imageId) {
 
   // handle success and failure of the XHR request load
   const loadDeferred = $.Deferred();
+
+  loadDeferred.cacheCount = 1;
 
   promise.then(function (dicomPart10AsArrayBuffer/* , xhr*/) {
     const byteArray = new Uint8Array(dicomPart10AsArrayBuffer);
@@ -76,7 +80,7 @@ function load (uri, loadRequest, imageId) {
 
     loadedDataSets[uri] = {
       dataSet,
-      cacheCount: 1
+      cacheCount: loadDeferred.cacheCount
     };
     cacheSizeInBytes += dataSet.byteArray.length;
     loadDeferred.resolve(dataSet);
