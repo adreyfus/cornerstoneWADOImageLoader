@@ -127,7 +127,7 @@ function unload (uri) {
 export function getCacheInfo () {
   return {
     cacheSizeInBytes,
-    numberOfDataSetsCached: loadedDataSets.length
+    numberOfDataSetsCached: Object.keys(loadedDataSets).length
   };
 }
 
