@@ -2,6 +2,7 @@ import $ from 'jquery';
 import * as dicomParser from 'dicom-parser';
 import { xhrRequest } from '../internal';
 import storeVoiPresetTab from '../storeVoiPresetTab';
+import events from '../events.js';
 
 /**
  * This object supports loading of DICOM P10 dataset from a uri and caching it so it can be accessed
@@ -86,6 +87,12 @@ function load (uri, loadRequest, imageId) {
     loadDeferred.resolve(dataSet);
     // done loading, remove the promise
     delete promises[uri];
+
+    $(events).trigger('DataSetsCacheChanged', {
+      uri,
+      action: 'loaded',
+      cacheInfo: getCacheInfo()
+    });
   }, function (error) {
     loadDeferred.reject(error);
   }).always(function () {
@@ -107,6 +114,12 @@ function unload (uri) {
       // console.log('removing loaded dataset for ' + uri);
       cacheSizeInBytes -= loadedDataSets[uri].dataSet.byteArray.length;
       delete loadedDataSets[uri];
+
+      $(events).trigger('DataSetsCacheChanged', {
+        uri,
+        action: 'unloaded',
+        cacheInfo: getCacheInfo()
+      });
     }
   }
 }
