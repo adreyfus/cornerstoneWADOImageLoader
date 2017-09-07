@@ -1,4 +1,4 @@
-import $ from 'jquery';
+import $ from './jquery.js';
 import getMinMax from './getMinMax';
 
 /**

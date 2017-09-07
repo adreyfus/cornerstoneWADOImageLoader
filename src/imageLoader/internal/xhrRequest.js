@@ -1,5 +1,5 @@
-import $ from 'jquery';
-import { getOptions } from './options';
+import $ from '../jquery.js';
+import { getOptions } from './options.js';
 import * as cornerstone from 'cornerstone-core';
 
 function xhrRequest (url, imageId, headers = {}, params = {}) {
