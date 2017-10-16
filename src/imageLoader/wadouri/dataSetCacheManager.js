@@ -1,5 +1,4 @@
-import $ from '../jquery.js';
-import * as dicomParser from '../dicom-parser.js';
+import { $, dicomParser } from '../../externalModules.js';
 import { xhrRequest } from '../internal/index.js';
 import storeVoiPresetTab from '../storeVoiPresetTab.js';
 import events from '../events.js';
@@ -31,18 +30,14 @@ function get (uri) {
 
 
   // loads the dicom dataset from the wadouri sp
-function load (uri, loadRequest, imageId) {
-  loadRequest = loadRequest || xhrRequest;
-
+function load (uri, loadRequest = xhrRequest, imageId) {
   // if already loaded return it right away
   if (loadedDataSets[uri]) {
     // console.log('using loaded dataset ' + uri);
-    const alreadyLoadedpromise = $.Deferred();
-
-    loadedDataSets[uri].cacheCount++;
-    alreadyLoadedpromise.resolve(loadedDataSets[uri].dataSet);
-
-    return alreadyLoadedpromise;
+    return new Promise((resolve) => {
+      loadedDataSets[uri].cacheCount++;
+      resolve(loadedDataSets[uri].dataSet);
+    });
   }
 
   // if we are currently loading this uri, increment the cacheCount and return its promise
@@ -53,56 +48,50 @@ function load (uri, loadRequest, imageId) {
     return promises[uri];
   }
 
-  // console.log('loading ' + uri);
-
   // This uri is not loaded or being loaded, load it via an xhrRequest
-  const promise = loadRequest(uri, imageId);
+  const loadDICOMPromise = loadRequest(uri, imageId);
 
-  // handle success and failure of the XHR request load
-  const loadDeferred = $.Deferred();
+   // handle success and failure of the XHR request load
+  const promise = new Promise((resolve, reject) => {
+    loadDICOMPromise.then(function (dicomPart10AsArrayBuffer/* , xhr*/) {
+      const byteArray = new Uint8Array(dicomPart10AsArrayBuffer);
 
-  loadDeferred.cacheCount = 1;
+      // Reject the promise if parsing the dicom file fails
+      let dataSet;
 
-  promise.then(function (dicomPart10AsArrayBuffer/* , xhr*/) {
-    const byteArray = new Uint8Array(dicomPart10AsArrayBuffer);
+      try {
+        dataSet = dicomParser.parseDicom(byteArray);
+        // Store the VOI preset tab (in dataSet.storedValues.voiPresetTab)
+        storeVoiPresetTab(dataSet);
+      } catch (error) {
+        return reject(error);
+      }
 
-    // Reject the promise if parsing the dicom file fails
-    let dataSet;
+      loadedDataSets[uri] = {
+        dataSet,
+        cacheCount: promise.cacheCount
+      };
+      cacheSizeInBytes += dataSet.byteArray.length;
+      resolve(dataSet);
 
-    try {
-      dataSet = dicomParser.parseDicom(byteArray);
-      // Store the VOI preset tab (in dataSet.storedValues.voiPresetTab)
-      storeVoiPresetTab(dataSet);
-    } catch (error) {
-      loadDeferred.reject(error);
-
-      return;
-    }
-
-    loadedDataSets[uri] = {
-      dataSet,
-      cacheCount: loadDeferred.cacheCount
-    };
-    cacheSizeInBytes += dataSet.byteArray.length;
-    loadDeferred.resolve(dataSet);
-    // done loading, remove the promise
-    delete promises[uri];
-
-    $(events).trigger('DataSetsCacheChanged', {
-      uri,
-      action: 'loaded',
-      cacheInfo: getCacheInfo()
+      $(events).trigger('DataSetsCacheChanged', {
+        uri,
+        action: 'loaded',
+        cacheInfo: getCacheInfo()
+      });
+    }, (error) => {
+      reject(error);
+    }).then(() => {
+      // Remove the promise regardless of success or failure
+      delete promises[uri];
     });
-  }, function (error) {
-    loadDeferred.reject(error);
-  }).always(function () {
-      // error thrown, remove the promise
-    delete promises[uri];
   });
 
-  promises[uri] = loadDeferred;
+  promise.cacheCount = 1;
 
-  return loadDeferred;
+  promises[uri] = promise;
+
+  return promise;
 }
 
 // remove the cached/loaded dicom dataset for the specified wadouri to free up memory
