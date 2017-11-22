@@ -72,8 +72,8 @@ function load (uri, loadRequest = xhrRequest, imageId) {
       };
       cacheSizeInBytes += dataSet.byteArray.length;
       resolve(dataSet);
-	  
-	  $(events).trigger('DataSetsCacheChanged', {
+
+      $(events).trigger('DataSetsCacheChanged', {
         uri,
         action: 'loaded',
         cacheInfo: getCacheInfo()
