@@ -50,7 +50,7 @@ function load (uri, loadRequest = xhrRequest, imageId) {
   // This uri is not loaded or being loaded, load it via an xhrRequest
   const loadDICOMPromise = loadRequest(uri, imageId);
 
-   // handle success and failure of the XHR request load
+  // handle success and failure of the XHR request load
   const promise = new Promise((resolve, reject) => {
     loadDICOMPromise.then(function (dicomPart10AsArrayBuffer/* , xhr*/) {
       const byteArray = new Uint8Array(dicomPart10AsArrayBuffer);
