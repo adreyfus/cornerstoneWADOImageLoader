@@ -98,5 +98,7 @@ export default {
   load,
   unload,
   purge,
-  get
+  get,
+  loadedDataSets,
+  promises
 };
