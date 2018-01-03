@@ -15,3 +15,5 @@ export { default as webWorkerManager } from './webWorkerManager.js';
 export { default as version } from '../version.js';
 export { internal } from './internal/index.js';
 export { external } from '../externalModules.js';
+
+export { default as events } from './events.js';
