@@ -136,5 +136,7 @@ export default {
   unload,
   getCacheInfo,
   purge,
-  get
+  get,
+  loadedDataSets,
+  promises
 };

@@ -7,6 +7,7 @@ import { getImagePixelModule,
 import dataSetCacheManager from './dataSetCacheManager.js';
 import fileManager from './fileManager.js';
 import getEncapsulatedImageFrame from './getEncapsulatedImageFrame.js';
+import getPixelData from './getPixelData.js';
 import getUncompressedImageFrame from './getUncompressedImageFrame.js';
 import loadFileRequest from './loadFileRequest.js';
 import { loadImageFromPromise,
@@ -29,6 +30,7 @@ export default {
   dataSetCacheManager,
   fileManager,
   getEncapsulatedImageFrame,
+  getPixelData,
   getUncompressedImageFrame,
   loadFileRequest,
   loadImageFromPromise,
