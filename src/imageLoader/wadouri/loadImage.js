@@ -20,10 +20,23 @@ function loadImageFromPromise (dataSetPromise, imageId, frame = 0, sharedCacheKe
 
   const promise = new Promise((resolve, reject) => {
     dataSetPromise.then((dataSet/* , xhr*/) => {
-      const pixelData = getPixelData(dataSet, frame);
-      const transferSyntax = dataSet.string('x00020010');
       const loadEnd = new Date().getTime();
-      const imagePromise = createImage(imageId, pixelData, transferSyntax, options);
+      let imagePromise;
+
+      try {
+        const pixelData = getPixelData(dataSet, frame);
+        const transferSyntax = dataSet.string('x00020010');
+
+        imagePromise = createImage(imageId, pixelData, transferSyntax, options);
+      } catch (error) {
+        // Reject the error, and the dataSet
+        reject({
+          error,
+          dataSet
+        });
+
+        return;
+      }
 
       imagePromise.then((image) => {
         image.data = dataSet;
