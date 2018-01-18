@@ -77,7 +77,7 @@ function load (uri, loadRequest = xhrRequest, imageId) {
       cornerstone.triggerEvent(cornerstone.events, 'datasetscachechanged', {
         uri,
         action: 'loaded',
-        cacheInfo: getCacheInfo()
+        cacheInfo: getInfo()
       });
     }, reject).then(() => {
       // Remove the promise if success
@@ -110,13 +110,13 @@ function unload (uri) {
       cornerstone.triggerEvent(cornerstone.events, 'datasetscachechanged', {
         uri,
         action: 'unloaded',
-        cacheInfo: getCacheInfo()
+        cacheInfo: getInfo()
       });
     }
   }
 }
 
-export function getCacheInfo () {
+export function getInfo () {
   return {
     cacheSizeInBytes,
     numberOfDataSetsCached: Object.keys(loadedDataSets).length
@@ -133,7 +133,7 @@ export default {
   isLoaded,
   load,
   unload,
-  getCacheInfo,
+  getInfo,
   purge,
   get,
   loadedDataSets,
