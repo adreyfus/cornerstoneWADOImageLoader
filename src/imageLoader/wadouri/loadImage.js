@@ -123,7 +123,11 @@ function getLoaderForScheme (scheme) {
 
 function loadImage (imageId, options = {}) {
   const parsedImageId = parseImageId(imageId);
-  const loader = getLoaderForScheme(parsedImageId.scheme);
+  let loader = options.loader;
+
+  if (loader === undefined) {
+    loader = getLoaderForScheme(parsedImageId.scheme);
+  }
 
   // if the dataset for this url is already loaded, use it
   if (dataSetCacheManager.isLoaded(parsedImageId.url)) {
