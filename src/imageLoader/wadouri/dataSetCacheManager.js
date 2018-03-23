@@ -51,7 +51,7 @@ function load (uri, loadRequest = xhrRequest, imageId) {
   const loadDICOMPromise = loadRequest(uri, imageId);
 
   promises[uri] = {
-    cachecount: 1
+    cacheCount: 1
   };
 
   // handle success and failure of the XHR request load
