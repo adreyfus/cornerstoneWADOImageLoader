@@ -100,13 +100,13 @@ function load (uri, loadRequest = xhrRequest, imageId) {
 }
 
 // remove the cached/loaded dicom dataset for the specified wadouri to free up memory
-function unload (uri) {
+function unload (uri, force) {
   const cornerstone = external.cornerstone;
 
   // console.log('unload for ' + uri);
   if (loadedDataSets[uri]) {
     loadedDataSets[uri].cacheCount--;
-    if (loadedDataSets[uri].cacheCount === 0) {
+    if (force || loadedDataSets[uri].cacheCount === 0) {
       // console.log('removing loaded dataset for ' + uri);
       cacheSizeInBytes -= loadedDataSets[uri].dataSet.byteArray.length;
       delete loadedDataSets[uri];
