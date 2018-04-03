@@ -30,7 +30,7 @@ function loadImageFromPromise (dataSetPromise, imageId, frame = 0, sharedCacheKe
         const pixelData = getPixelData(dataSet, frame);
         const transferSyntax = dataSet.string('x00020010');
 
-        imagePromise = createImage(imageId, pixelData, transferSyntax, options.decodeTask);
+        imagePromise = createImage(imageId, pixelData, transferSyntax, options.decodeTask, dataSet);
       } catch (error) {
         // Reject the error, and the dataSet
         reject({
